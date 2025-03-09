@@ -1,23 +1,29 @@
-# Use the official Golang image as the base image
-FROM golang:1.24.1-alpine
+FROM golang:1.24.1-alpine AS builder
 
-# Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go.mod and go.sum files
-COPY go.mod go.sum ./
+COPY go.mod ./
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN if [ -f go.sum ]; then \
+      cp go.sum .; \
+    else \
+      touch go.sum; \
+    fi
+
 RUN go mod download
 
-# Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Build the Go app
-RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /time-doo-api
 
-# Expose port 3000 to the outside world
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /
+
+COPY --from=builder /time-doo-api .
+
 EXPOSE 3000
 
-# Command to run the executable
-CMD ["./main"]
+ENTRYPOINT ["/time-doo-api"]

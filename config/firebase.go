@@ -11,13 +11,13 @@ import (
 
 func InitFirebase(env Env) (*firestore.Client, *auth.Client, error) {
 	ctx := context.Background()
-	saPath := env.GoogleApplicationCredentials
+	jsonCred := env.GoogleApplicationCredentials
 
 	conf := &firebase.Config{
 		ProjectID: env.FirestoreProjectID,
 	}
 
-	app, err := firebase.NewApp(ctx, conf, option.WithCredentialsFile(saPath))
+	app, err := firebase.NewApp(ctx, conf, option.WithCredentialsJSON([]byte(jsonCred)))
 	if err != nil {
 		return nil, nil, err
 	}
