@@ -7,7 +7,6 @@
 *.so
 *.dylib
 /bin/
-/go.sum
 /go.work
 /go.env
 /vendor/
