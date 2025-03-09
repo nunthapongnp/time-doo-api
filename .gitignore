@@ -1,0 +1,108 @@
+# .gitignore for time-doo-api
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin/
+/go.sum
+/go.work
+/go.env
+/vendor/
+/testdata/
+*.test
+
+# Firebase
+/firebase.json
+/firebase-debug.log
+.firebaserc
+
+# Environment
+.env
+.env.local
+.env.development
+.env.production
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# Build and distribution
+/dist/
+/build/
+/coverage.html
+/coverage.out
+/time-doo-api
+
+# Dependency directories
+/node_modules/
+/bower_components/
+/jspm_packages/
+
+# Logs
+*.log
+/logs/
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Redis (if using local instance)
+dump.rdb
+appendonly.aof
+
+# Docker
+.dockerignore
+docker-compose*.yml
+.docker.env
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+.cache/
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# Visual Studio Code
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# Go workspace
+go.work
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Local development files
+.local/
+.devcontainer/
+
+# Redis CLI history
+.rediscli_history
