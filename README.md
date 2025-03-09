@@ -43,7 +43,7 @@ Time-Doo API is a powerful and efficient task management system designed to help
    PORT=3000
    FIRESTORE_PROJECT_ID=your-firestore-project-id
    FIREBASE_API_KEY=your-firebase-api-key
-   GOOGLE_APPLICATION_CREDENTIALS=path-to-your-firebase-credentials.json
+   GOOGLE_APPLICATION_CREDENTIALS=firebase-credentials-json
    REDIS_ADDRESS=your-redis-address
    REDIS_PASSWORD=your-redis-password
    ```
@@ -60,10 +60,6 @@ Time-Doo API is a powerful and efficient task management system designed to help
    ```
 
 ### API Endpoints
-
-- **Authentication**
-
-  - `POST /api/v1/auth/get-id-token`: Get Firebase ID token using email and password.
 
 - **Tasks**
 
