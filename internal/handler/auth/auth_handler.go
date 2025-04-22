@@ -33,16 +33,22 @@ func (h *Handler) RegisterTenant(c *gin.Context) {
 	user := &domain.User{
 		Email:    req.Email,
 		Password: hashPassword(req.Password),
-		FullName: req.FullName,
+		FullName: req.Email,
 	}
 
-	err := h.u.Register(req.FullName, user)
+	err := h.u.Register(req.Email, user)
 	if err != nil {
 		response.Error(c, err, http.StatusInternalServerError)
 		return
 	}
 
-	response.Created(c, nil)
+	token, err := h.u.Login(req.Email, req.Password)
+	if err != nil {
+		response.Error(c, err, http.StatusUnauthorized)
+		return
+	}
+
+	response.Created(c, gin.H{"token": token})
 }
 
 func (h *Handler) Login(c *gin.Context) {
