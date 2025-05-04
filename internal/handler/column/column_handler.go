@@ -25,6 +25,7 @@ func (h *Handler) Register(rg *gin.RouterGroup) {
 	r.PUT("/:columnId", h.EditColumn)
 	r.DELETE("/:columnId", h.RemoveColumn)
 	r.PUT("/reorder", h.ReorderColumn)
+	r.GET("/tasks", h.GetColumnWithTasks)
 }
 
 func (h *Handler) AddColumn(c *gin.Context) {
@@ -119,4 +120,15 @@ func (h *Handler) ReorderColumn(c *gin.Context) {
 	}
 
 	response.NoContent(c)
+}
+
+func (h *Handler) GetColumnWithTasks(c *gin.Context) {
+	projectID, _ := strconv.ParseInt(c.Param("projectId"), 10, 64)
+
+	cols, err := h.u.GetColumnWithTasks(projectID)
+	if err != nil {
+		response.Error(c, err, http.StatusBadRequest)
+	}
+
+	response.OK(c, cols)
 }

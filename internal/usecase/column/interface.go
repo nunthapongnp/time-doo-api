@@ -8,4 +8,5 @@ type ColumnUsecase interface {
 	EditColumn(c *domain.Column) error
 	RemoveColumn(id int64) error
 	ReorderColumn(projectID int64, ids []int64) error
+	GetColumnWithTasks(projectID int64) ([]*domain.Column, error)
 }

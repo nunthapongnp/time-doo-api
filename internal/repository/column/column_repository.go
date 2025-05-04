@@ -45,3 +45,9 @@ func (r *repository) Reorder(projectID int64, ids []int64) error {
 		return nil
 	})
 }
+
+func (r *repository) GetWithTasks(projectID int64) ([]*domain.Column, error) {
+	var cols []*domain.Column
+	err := r.db.Raw().Where("project_id = ?", projectID).Order("position ASC").Preload("Tasks").Find(&cols).Error
+	return cols, err
+}

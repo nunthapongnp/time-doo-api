@@ -32,3 +32,7 @@ func (u *usecase) RemoveColumn(id int64) error {
 func (u *usecase) ReorderColumn(projectID int64, ids []int64) error {
 	return u.columnRepo.Reorder(projectID, ids)
 }
+
+func (u *usecase) GetColumnWithTasks(projectID int64) ([]*domain.Column, error) {
+	return u.columnRepo.GetWithTasks(projectID)
+}
