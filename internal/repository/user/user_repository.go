@@ -42,3 +42,9 @@ func (r *repository) Edit(user *domain.User) error {
 func (r *repository) Remove(id int64) error {
 	return r.db.Delete(&domain.User{ID: id})
 }
+
+func (r *repository) GetByTenant(tenantID int64) ([]*domain.User, error) {
+	var users []*domain.User
+	err := r.db.Find(&users, "tenant_id = ?", tenantID)
+	return users, err
+}

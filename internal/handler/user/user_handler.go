@@ -25,6 +25,7 @@ func (h *Handler) Register(rg *gin.RouterGroup) {
 	r.POST("", h.AddUser)
 	r.PUT("/:userId", h.EditUser)
 	r.DELETE("/:userId", h.RemoveUser)
+	r.GET("/tenants/:tenantId", h.GetUserByTenant)
 }
 
 func (h *Handler) GetAllUsers(c *gin.Context) {
@@ -86,4 +87,15 @@ func (h *Handler) RemoveUser(c *gin.Context) {
 	}
 
 	response.NoContent(c)
+}
+
+func (h *Handler) GetUserByTenant(c *gin.Context) {
+	tenantID, _ := strconv.ParseInt(c.Param("tenantId"), 10, 64)
+	users, err := h.u.GetUserByTenant(tenantID)
+	if err != nil {
+		response.Error(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	response.OK(c, users)
 }

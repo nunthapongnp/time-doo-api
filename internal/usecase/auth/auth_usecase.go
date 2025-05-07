@@ -31,6 +31,7 @@ func (u *usecase) Register(tenantName string, user *domain.User) error {
 		return err
 	}
 
+	user.TenantID = tenant.ID
 	if err := u.userRepo.Add(user); err != nil {
 		return err
 	}

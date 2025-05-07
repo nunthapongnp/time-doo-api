@@ -36,3 +36,7 @@ func (u *usecase) EditUser(user *domain.User) error {
 func (u *usecase) RemoveUser(id int64) error {
 	return u.userRepo.Remove(id)
 }
+
+func (u *usecase) GetUserByTenant(tenantID int64) ([]*domain.User, error) {
+	return u.userRepo.GetByTenant(tenantID)
+}
