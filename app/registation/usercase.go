@@ -25,7 +25,7 @@ type AppUsecase struct {
 func UsecaseRegistation(repo *AppRepository) *AppUsecase {
 	return &AppUsecase{
 		authUsecase:          auth.NewAuthUsecase(repo.userRepository, repo.tenantRepository, repo.tenantMemberRepository),
-		userUsecase:          user.NewUserUsecase(repo.userRepository),
+		userUsecase:          user.NewUserUsecase(repo.userRepository, repo.tenantMemberRepository),
 		tenantUsecase:        tenant.NewTenantUsecase(repo.tenantRepository, repo.tenantMemberRepository),
 		tenantMemberUsecase:  tenantmember.NewTenantMemberUsecase(repo.tenantMemberRepository),
 		projectUsecase:       project.NewProjectUsecase(repo.projectRepository, repo.projectMemberRepository),

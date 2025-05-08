@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time-doo-api/internal/domain"
 	"time-doo-api/internal/usecase/user"
+	pwd "time-doo-api/pkg/bcrypt"
 	"time-doo-api/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -55,6 +56,8 @@ func (h *Handler) AddUser(c *gin.Context) {
 		response.Error(c, err, http.StatusBadRequest)
 		return
 	}
+
+	user.Password = pwd.HashPassword(user.Password)
 	if err := h.u.AddUser(&user); err != nil {
 		response.Error(c, err, http.StatusInternalServerError)
 		return

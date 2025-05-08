@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time-doo-api/internal/domain"
 	"time-doo-api/internal/usecase/auth"
+	pwd "time-doo-api/pkg/bcrypt"
 	"time-doo-api/pkg/response"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Handler struct {
@@ -32,7 +32,7 @@ func (h *Handler) RegisterTenant(c *gin.Context) {
 
 	user := &domain.User{
 		Email:    req.Email,
-		Password: hashPassword(req.Password),
+		Password: pwd.HashPassword(req.Password),
 		FullName: req.Email,
 	}
 
@@ -65,9 +65,4 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	response.OK(c, gin.H{"token": token})
-}
-
-func hashPassword(password string) string {
-	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(hash)
 }

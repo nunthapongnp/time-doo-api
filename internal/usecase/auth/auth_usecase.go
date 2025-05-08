@@ -6,9 +6,8 @@ import (
 	"time-doo-api/internal/repository/tenant"
 	"time-doo-api/internal/repository/tenantmember"
 	"time-doo-api/internal/repository/user"
+	pwd "time-doo-api/pkg/bcrypt"
 	"time-doo-api/pkg/jwt"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type usecase struct {
@@ -48,17 +47,16 @@ func (u *usecase) Register(tenantName string, user *domain.User) error {
 func (u *usecase) Login(email, password string) (string, error) {
 	usr, err := u.userRepo.FindByEmail(email)
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return "", errors.New("not found user with this email")
 	}
 
 	mem, err := u.tenantMemberRepo.FindByUserID(usr.ID)
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return "", errors.New("not found user in tenant")
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(password))
-	if err != nil {
-		return "", errors.New("invalid email or password")
+	if !pwd.VerifyPassword(usr.Password, password) {
+		return "", errors.New("invalid password")
 	}
 
 	token, err := jwt.GenerateToken(uint(usr.ID), uint(mem.TenantID), mem.Role)
