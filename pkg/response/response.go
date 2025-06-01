@@ -14,6 +14,7 @@ type SuccessResponse struct {
 
 type ErrorResponse struct {
 	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
 	Error   string `json:"error"`
 	Code    int    `json:"code"`
 }
@@ -49,6 +50,15 @@ func Error(c *gin.Context, err error, status int) {
 	c.AbortWithStatusJSON(status, ErrorResponse{
 		Success: false,
 		Error:   err.Error(),
+		Code:    status,
+	})
+}
+
+func Errorf(c *gin.Context, message string, err error, status int) {
+	c.AbortWithStatusJSON(status, ErrorResponse{
+		Success: false,
+		Error:   err.Error(),
+		Message: message,
 		Code:    status,
 	})
 }

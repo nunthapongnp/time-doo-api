@@ -24,7 +24,7 @@ type AppHandler struct {
 
 func HandlerRegistation(u *AppUsecase) *AppHandler {
 	return &AppHandler{
-		AuthHandler:          auth.NewAuthHandler(u.authUsecase),
+		AuthHandler:          auth.NewAuthHandler(u.tenantUsecase, u.tenantMemberUsecase, u.userUsecase),
 		userHandler:          user.NewUserHandler(u.userUsecase),
 		tenantHandler:        tenant.NewTenantHandler(u.tenantUsecase),
 		tenantMemberHandler:  tenantmember.NewTenantMemberHandler(u.tenantMemberUsecase),

@@ -1,7 +1,6 @@
 package registation
 
 import (
-	"time-doo-api/internal/usecase/auth"
 	"time-doo-api/internal/usecase/column"
 	"time-doo-api/internal/usecase/project"
 	"time-doo-api/internal/usecase/projectmember"
@@ -12,7 +11,6 @@ import (
 )
 
 type AppUsecase struct {
-	authUsecase          auth.AuthUsecase
 	userUsecase          user.UserUsecase
 	tenantUsecase        tenant.TenantUsecase
 	tenantMemberUsecase  tenantmember.TenantMemberUsecase
@@ -24,7 +22,6 @@ type AppUsecase struct {
 
 func UsecaseRegistation(repo *AppRepository) *AppUsecase {
 	return &AppUsecase{
-		authUsecase:          auth.NewAuthUsecase(repo.userRepository, repo.tenantRepository, repo.tenantMemberRepository),
 		userUsecase:          user.NewUserUsecase(repo.userRepository, repo.tenantMemberRepository),
 		tenantUsecase:        tenant.NewTenantUsecase(repo.tenantRepository, repo.tenantMemberRepository),
 		tenantMemberUsecase:  tenantmember.NewTenantMemberUsecase(repo.tenantMemberRepository),

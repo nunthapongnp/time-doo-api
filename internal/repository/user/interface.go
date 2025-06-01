@@ -9,7 +9,6 @@ type UserRepository interface {
 	FindByID(id int64) (*domain.User, error)
 	FindByEmail(email string) (*domain.User, error)
 	GetAll() ([]*domain.User, error)
-	GetByTenant(tenantID int64) ([]*domain.User, error)
 	Edit(user *domain.User) error
 	Remove(id int64) error
 }

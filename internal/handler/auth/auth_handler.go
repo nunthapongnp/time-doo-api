@@ -1,21 +1,29 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"time-doo-api/internal/domain"
-	"time-doo-api/internal/usecase/auth"
-	pwd "time-doo-api/pkg/bcrypt"
+	"time-doo-api/internal/model"
+	"time-doo-api/internal/usecase/tenant"
+	"time-doo-api/internal/usecase/tenantmember"
+	"time-doo-api/internal/usecase/user"
+	"time-doo-api/pkg/jwt"
 	"time-doo-api/pkg/response"
+
+	pwd "time-doo-api/pkg/bcrypt"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	u auth.AuthUsecase
+	tenantUsecase       tenant.TenantUsecase
+	tenantmemberUsecase tenantmember.TenantMemberUsecase
+	userUsecase         user.UserUsecase
 }
 
-func NewAuthHandler(u auth.AuthUsecase) *Handler {
-	return &Handler{u}
+func NewAuthHandler(tenantUsecase tenant.TenantUsecase, tenantmemberUsecase tenantmember.TenantMemberUsecase, userUsecase user.UserUsecase) *Handler {
+	return &Handler{tenantUsecase, tenantmemberUsecase, userUsecase}
 }
 
 func (h *Handler) Register(rg *gin.RouterGroup) {
@@ -30,21 +38,39 @@ func (h *Handler) RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	user := &domain.User{
-		Email:    req.Email,
-		Password: pwd.HashPassword(req.Password),
-		FullName: req.Email,
+	tenant := &domain.Tenant{
+		Name: req.Email,
 	}
 
-	err := h.u.Register(req.Email, user)
+	err := h.tenantUsecase.AddTenant(tenant)
 	if err != nil {
 		response.Error(c, err, http.StatusInternalServerError)
 		return
 	}
 
-	token, err := h.u.Login(req.Email, req.Password)
+	userDto := &model.UserDTO{
+		Email:    req.Email,
+		Password: pwd.HashPassword(req.Password),
+		FullName: req.Email,
+		TenantID: tenant.ID,
+		Role:     "admin",
+	}
+
+	usr, err := h.userUsecase.AddUser(userDto)
 	if err != nil {
-		response.Error(c, err, http.StatusUnauthorized)
+		response.Error(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	mem, err := h.tenantmemberUsecase.FindTenantMemberByUserID(usr.ID)
+	if err != nil {
+		response.Error(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	token, err := jwt.GenerateToken(uint(usr.ID), uint(mem.TenantID), mem.Role)
+	if err != nil {
+		response.Error(c, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -58,9 +84,26 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.u.Login(req.Email, req.Password)
+	usr, err := h.userUsecase.GetUserByEmail(req.Email)
 	if err != nil {
 		response.Error(c, err, http.StatusUnauthorized)
+		return
+	}
+
+	mem, err := h.tenantmemberUsecase.FindTenantMemberByUserID(usr.ID)
+	if err != nil {
+		response.Error(c, err, http.StatusUnauthorized)
+		return
+	}
+
+	if !pwd.VerifyPassword(usr.Password, req.Password) {
+		response.Error(c, errors.New("invalid password"), http.StatusUnauthorized)
+		return
+	}
+
+	token, err := jwt.GenerateToken(uint(usr.ID), uint(mem.TenantID), mem.Role)
+	if err != nil {
+		response.Error(c, err, http.StatusInternalServerError)
 		return
 	}
 

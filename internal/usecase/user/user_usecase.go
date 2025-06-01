@@ -2,6 +2,7 @@ package user
 
 import (
 	"time-doo-api/internal/domain"
+	"time-doo-api/internal/model"
 	"time-doo-api/internal/repository/tenantmember"
 	"time-doo-api/internal/repository/user"
 )
@@ -27,18 +28,28 @@ func (u *usecase) GetUserByEmail(email string) (*domain.User, error) {
 	return u.userRepo.FindByEmail(email)
 }
 
-func (u *usecase) AddUser(user *domain.User) error {
+func (u *usecase) AddUser(model *model.UserDTO) (*domain.User, error) {
+	user := &domain.User{
+		FullName: model.FullName,
+		Email:    model.Email,
+		Password: model.Password,
+	}
+
 	if err := u.userRepo.Add(user); err != nil {
-		return err
+		return user, err
 	}
 
 	member := &domain.TenantMember{
-		TenantID: user.TenantID,
+		TenantID: model.TenantID,
 		UserID:   user.ID,
-		Role:     "admin",
+		Role:     model.Role,
 	}
 
-	return u.tenantMemberRepo.Add(member)
+	if err := u.tenantMemberRepo.Add(member); err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
 
 func (u *usecase) EditUser(user *domain.User) error {
@@ -49,6 +60,23 @@ func (u *usecase) RemoveUser(id int64) error {
 	return u.userRepo.Remove(id)
 }
 
-func (u *usecase) GetUserByTenant(tenantID int64) ([]*domain.User, error) {
-	return u.userRepo.GetByTenant(tenantID)
+func (u *usecase) GetUserByTenant(tenantID int64) ([]*model.UserDTO, error) {
+	mem, err := u.tenantMemberRepo.GetByTenantID(tenantID)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*model.UserDTO
+	for _, m := range mem {
+		users = append(users, &model.UserDTO{
+			ID:       m.UserID,
+			Email:    m.Users.Email,
+			FullName: m.Users.FullName,
+			TenantID: m.TenantID,
+			Role:     m.Role,
+			AppModel: m.AppModel,
+		})
+	}
+
+	return users, err
 }

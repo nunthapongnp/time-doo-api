@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("dev.env")
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,4 +24,5 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Failed to run server: %v", err)
 	}
+
 }

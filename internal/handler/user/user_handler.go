@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"time-doo-api/internal/domain"
+	"time-doo-api/internal/model"
 	"time-doo-api/internal/usecase/user"
 	pwd "time-doo-api/pkg/bcrypt"
 	"time-doo-api/pkg/response"
@@ -51,14 +52,14 @@ func (h *Handler) GetUserByID(c *gin.Context) {
 }
 
 func (h *Handler) AddUser(c *gin.Context) {
-	var user domain.User
+	var user model.UserDTO
 	if err := c.ShouldBindJSON(&user); err != nil {
 		response.Error(c, err, http.StatusBadRequest)
 		return
 	}
 
 	user.Password = pwd.HashPassword(user.Password)
-	if err := h.u.AddUser(&user); err != nil {
+	if _, err := h.u.AddUser(&user); err != nil {
 		response.Error(c, err, http.StatusInternalServerError)
 		return
 	}

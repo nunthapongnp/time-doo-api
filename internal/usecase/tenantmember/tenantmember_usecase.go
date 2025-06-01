@@ -13,6 +13,14 @@ func NewTenantMemberUsecase(tenantMemberRepo tenantmember.TenantMemberRepository
 	return &usecase{tenantMemberRepo}
 }
 
+func (u *usecase) GetTenantMemberByTenantID(tenantID int64) ([]*domain.TenantMember, error) {
+	return u.tenantMemberRepo.GetByTenantID(tenantID)
+}
+
+func (u *usecase) FindTenantMemberByUserID(userID int64) (*domain.TenantMember, error) {
+	return u.tenantMemberRepo.FindByUserID(userID)
+}
+
 func (u *usecase) AddTenantMember(member *domain.TenantMember) error {
 	return u.tenantMemberRepo.Add(member)
 }

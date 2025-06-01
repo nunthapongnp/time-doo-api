@@ -15,13 +15,13 @@ func NewTenantMemberRepository(db *ctx.AppDbContext) TenantMemberRepository {
 
 func (r *repository) GetByTenantID(tenantID int64) ([]*domain.TenantMember, error) {
 	var members []*domain.TenantMember
-	err := r.db.Find(&members, "tenant_id = ?", tenantID)
+	err := r.db.Raw().Preload("Users").Preload("Tenants").Find(&members, "tenant_id = ?", tenantID).Error
 	return members, err
 }
 
 func (r *repository) FindByUserID(userID int64) (*domain.TenantMember, error) {
 	var member domain.TenantMember
-	err := r.db.First(&member, "user_id = ?", userID)
+	err := r.db.Raw().Preload("Users").Preload("Tenants").First(&member, "user_id = ?", userID).Error
 	return &member, err
 }
 
